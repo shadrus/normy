@@ -1,15 +1,8 @@
 # -*- coding: utf-8 -*-
 import pyodbc
 from Queue import Queue
-import os
 from datetime import datetime
-from time import time
-
-import logging
-from logging import handlers
 from types import NoneType
-
-from uploder.conf.config import Configurator
 import sys
 
 __author__ = 'Krylov.YS'
