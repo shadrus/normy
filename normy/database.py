@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pyodbc
 from Queue import Queue
 from datetime import datetime
 from types import NoneType
@@ -126,12 +125,10 @@ class NormyDatabase(object):
 
     def _coerce(self, data):
         if data:
-
             def generate_seq(seq_data):
                 return tuple(self._coerce_to_utf8(item) for item in seq_data)
             if isinstance(data, tuple):
-                res = generate_seq(data)
-                return res
+                return generate_seq(data)
             if isinstance(data, list):
                 result = []
                 for tuple_item in data:
@@ -151,18 +148,14 @@ class NormyDatabase(object):
 
     def get_one_result(self, sql, *args):
         cursor = self.connection.cursor()
-        try:
-            cursor.execute(sql, *args)
-            result = cursor.fetchone()
-            cursor.close()
-            if isinstance(result, pyodbc.Row):
-                result = self._coerce(tuple(x for x in result))
-                return result
-            else:
-                result = self._coerce(result)
-                return result
-        except pyodbc.Error as err:
-            print err[1]
+        cursor.execute(sql, *args)
+        result = cursor.fetchone()
+        cursor.close()
+        if isinstance(result, self.db_pool.db.Row):
+            result = self._coerce(tuple(x for x in result))
+        else:
+            result = self._coerce(result)
+        return result
 
     def execute_query(self, sql, *args):
         cursor = self.connection.cursor()
@@ -170,7 +163,7 @@ class NormyDatabase(object):
         cursor.commit()
         cursor.close()
 
-    def get_not_all(self, data_lst, indexes):
+    def get_by_indexes(self, data_lst, indexes):
         def prepare_idx(data):
             lst_res = []
             for idx in indexes:
